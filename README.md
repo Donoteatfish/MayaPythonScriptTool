@@ -1,7 +1,7 @@
 # MayaPythonScriptTool
 Python script for Maya
 
-##XYPolyTool
+## XYPolyTool
 用于高低模烘焙前的准备工作
 * 自动平滑非UV边界的边，针对柱体展开的UV进行了优化
 * 自带部分纠错功能
