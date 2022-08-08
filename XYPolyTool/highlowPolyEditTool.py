@@ -191,7 +191,7 @@ class highlowPolyEdit():
 	def CheckListMatch(self, *args):
 		for EachPoly in self.ListOfLowPoly:
 			if self.CheckMatch(EachPoly) == False:
-				raise Exception(LowPoly+' do not have matched highpoly!')
+				raise Exception(EachPoly+' do not have matched highpoly!')
 		om.MGlobal.displayInfo('Congratulations! Each lowpoly has matched highpoly')
 		cmds.text('CheckSliderText',e=1, enable=1)
 		cmds.intSlider('CheckSlider',e=1, enable=1)
