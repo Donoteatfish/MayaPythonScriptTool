@@ -1,4 +1,4 @@
-#encoding:utf-8
+# -*- coding: utf-8 -*-
 import maya.cmds as cmds
 import maya.mel as mel
 import maya.OpenMaya as om
