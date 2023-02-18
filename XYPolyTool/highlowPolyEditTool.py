@@ -14,37 +14,37 @@ class highlowPolyEdit():
 
 	#按UV边平滑=====================================================================================
 	def SoftByUVsEdge(self,*args):
-	    ObjList = cmds.ls(sl=1, o=1) or []
-	    for SubObj in ObjList:
-	    	cmds.select(SubObj)
-	        cmds.polyNormalPerVertex(ufn=1) #解冻法线
-	        cmds.polySoftEdge(a=0,ch=1) #硬化所有边
+		ObjList = cmds.ls(sl=1, o=1) or []
+		for SubObj in ObjList:
+			cmds.select(SubObj)
+			cmds.polyNormalPerVertex(ufn=1) #解冻法线
+			cmds.polySoftEdge(a=0,ch=1) #硬化所有边
 
-	        mel.eval("ConvertSelectionToUVs") #选择所有的uv点      
-	        
-	        NumbOfUVShell = cmds.polyEvaluate( uvShell=True )#获得uv壳的数量      
-	        
-	        ListOfUVs = cmds.ls(sl=1,fl=1) #获取UVs的列表       
-	        
-	        UVShellIndices = cmds.polyEvaluate( uvShellIds=True ) #获取UVs所在壳的ID    
+			mel.eval("ConvertSelectionToUVs") #选择所有的uv点      
+			
+			NumbOfUVShell = cmds.polyEvaluate( uvShell=True )#获得uv壳的数量      
+			
+			ListOfUVs = cmds.ls(sl=1,fl=1) #获取UVs的列表       
+			
+			UVShellIndices = cmds.polyEvaluate( uvShellIds=True ) #获取UVs所在壳的ID    
 
-	        #创建对应数量的壳集合放到总的集合中
-	        ListOfUvShellList = []
-	        for i in range(NumbOfUVShell):
-	            ListOfUvShellList.append([]) 
+			#创建对应数量的壳集合放到总的集合中
+			ListOfUvShellList = []
+			for i in range(NumbOfUVShell):
+				ListOfUvShellList.append([]) 
 
-	        #将UVs添加到对应的壳集合中
-	        UVsIndex = 0
-	        for uvs in ListOfUVs:
-	            ListOfUvShellList[UVShellIndices[UVsIndex]].append(uvs)
-	            UVsIndex += 1    
+			#将UVs添加到对应的壳集合中
+			UVsIndex = 0
+			for uvs in ListOfUVs:
+				ListOfUvShellList[UVShellIndices[UVsIndex]].append(uvs)
+				UVsIndex += 1    
 
-	        #将每个壳中对应的UVs转换为内部边
-	        for ListOfUVsInOneShell in ListOfUvShellList:
-	            EdgeInShell = cmds.polyListComponentConversion(ListOfUVsInOneShell,te=1,internal=1)
-	            cmds.polySoftEdge(EdgeInShell,a=180,ch=1)
-	    
-	    cmds.select(ObjList)
+			#将每个壳中对应的UVs转换为内部边
+			for ListOfUVsInOneShell in ListOfUvShellList:
+				EdgeInShell = cmds.polyListComponentConversion(ListOfUVsInOneShell,te=1,internal=1)
+				cmds.polySoftEdge(EdgeInShell,a=180,ch=1)
+		
+		cmds.select(ObjList)
 
 	#重命名===========================================================================================
 	def Rename(self,*args):
@@ -280,7 +280,7 @@ class highlowPolyEdit():
 
 		#日常窗口检查
 		if cmds.window('highlowPolyEditToolWindow',query=1,exists=1):
-		      cmds.deleteUI('highlowPolyEditToolWindow')
+			  cmds.deleteUI('highlowPolyEditToolWindow')
 
 		#创建窗口
 		cmds.window('highlowPolyEditToolWindow',title='XYPolyTool v1.0')
