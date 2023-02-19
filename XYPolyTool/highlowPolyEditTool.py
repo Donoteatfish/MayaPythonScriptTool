@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+#å¦‚æœä½ æƒ³è”ç³»æˆ‘ï¼Œè¿™æ˜¯æˆ‘çš„é‚®ç®±xiangyu.23@qq.com
 import maya.cmds as cmds
 import maya.mel as mel
 import maya.OpenMaya as om
+import sys
 
 class highlowPolyEdit():
 
@@ -12,54 +14,54 @@ class highlowPolyEdit():
 		print(self.ListOfLowPoly)
 		print(self.GetHightPolyList())
 
-	#°´UV±ßÆ½»¬=====================================================================================
+	#æŒ‰UVè¾¹å¹³æ»‘=====================================================================================
 	def SoftByUVsEdge(self,*args):
 		ObjList = cmds.ls(sl=1, o=1) or []
 		for SubObj in ObjList:
 			cmds.select(SubObj)
-			cmds.polyNormalPerVertex(ufn=1) #½â¶³·¨Ïß
-			cmds.polySoftEdge(a=0,ch=1) #Ó²»¯ËùÓĞ±ß
+			cmds.polyNormalPerVertex(ufn=1) #è§£å†»æ³•çº¿
+			cmds.polySoftEdge(a=0,ch=1) #ç¡¬åŒ–æ‰€æœ‰è¾¹
 
-			mel.eval("ConvertSelectionToUVs") #Ñ¡ÔñËùÓĞµÄuvµã      
+			mel.eval("ConvertSelectionToUVs") #é€‰æ‹©æ‰€æœ‰çš„uvç‚¹      
 			
-			NumbOfUVShell = cmds.polyEvaluate( uvShell=True )#»ñµÃuv¿ÇµÄÊıÁ¿      
+			NumbOfUVShell = cmds.polyEvaluate( uvShell=True )#è·å¾—uvå£³çš„æ•°é‡      
 			
-			ListOfUVs = cmds.ls(sl=1,fl=1) #»ñÈ¡UVsµÄÁĞ±í       
+			ListOfUVs = cmds.ls(sl=1,fl=1) #è·å–UVsçš„åˆ—è¡¨       
 			
-			UVShellIndices = cmds.polyEvaluate( uvShellIds=True ) #»ñÈ¡UVsËùÔÚ¿ÇµÄID    
+			UVShellIndices = cmds.polyEvaluate( uvShellIds=True ) #è·å–UVsæ‰€åœ¨å£³çš„ID    
 
-			#´´½¨¶ÔÓ¦ÊıÁ¿µÄ¿Ç¼¯ºÏ·Åµ½×ÜµÄ¼¯ºÏÖĞ
+			#åˆ›å»ºå¯¹åº”æ•°é‡çš„å£³é›†åˆæ”¾åˆ°æ€»çš„é›†åˆä¸­
 			ListOfUvShellList = []
 			for i in range(NumbOfUVShell):
 				ListOfUvShellList.append([]) 
 
-			#½«UVsÌí¼Óµ½¶ÔÓ¦µÄ¿Ç¼¯ºÏÖĞ
+			#å°†UVsæ·»åŠ åˆ°å¯¹åº”çš„å£³é›†åˆä¸­
 			UVsIndex = 0
 			for uvs in ListOfUVs:
 				ListOfUvShellList[UVShellIndices[UVsIndex]].append(uvs)
 				UVsIndex += 1    
 
-			#½«Ã¿¸ö¿ÇÖĞ¶ÔÓ¦µÄUVs×ª»»ÎªÄÚ²¿±ß
+			#å°†æ¯ä¸ªå£³ä¸­å¯¹åº”çš„UVsè½¬æ¢ä¸ºå†…éƒ¨è¾¹
 			for ListOfUVsInOneShell in ListOfUvShellList:
 				EdgeInShell = cmds.polyListComponentConversion(ListOfUVsInOneShell,te=1,internal=1)
 				cmds.polySoftEdge(EdgeInShell,a=180,ch=1)
 		
 		cmds.select(ObjList)
 
-	#ÖØÃüÃû===========================================================================================
+	#é‡å‘½å===========================================================================================
 	def Rename(self,*args):
 		ListOfSelected = cmds.ls(sl=1) or []
 		NewName = cmds.textField('RenameTextField', q=1, tx = 1)
 		StartNumb = cmds.textField('StartTextField', q=1, tx = 1)
 		PaddingNumb = cmds.textField('PaddingTextField', q=1, tx = 1)
 
-		NameNumb = StartNumb.zfill(int(PaddingNumb)) #»ñÈ¡Ö¸¶¨Î»ÊıµÄÆğÊ¼±àºÅ
+		NameNumb = StartNumb.zfill(int(PaddingNumb)) #è·å–æŒ‡å®šä½æ•°çš„èµ·å§‹ç¼–å·
 
 		for EachObj in ListOfSelected:
 			cmds.rename(EachObj, NewName + NameNumb)
 			NameNumb = str(int(NameNumb)+1).zfill(int(PaddingNumb))
 
-	#Ìí¼Óºó×º
+	#æ·»åŠ åç¼€
 	@staticmethod
 	def AddSuffix(poly):
 		ListOfSelected = cmds.ls(sl=1) or []
@@ -76,7 +78,7 @@ class highlowPolyEdit():
 	def AddLowSuffix(self,*args):
 		self.AddSuffix(poly='LowSubfixTextField')
 
-	#É¾³ıºó×º
+	#åˆ é™¤åç¼€
 	def DeletLowSuffix(self,*args):
 		ListOfSelected = cmds.ls(sl=1) or []
 		SuffixText = cmds.textField('LowSubfixTextField', q=1, tx = 1)
@@ -89,11 +91,11 @@ class highlowPolyEdit():
 
 			cmds.rename(EachObj,EachObjName.rstrip(SuffixText))
 
-	#¼ÇÂ¼µÍÄ£
+	#è®°å½•ä½æ¨¡
 	def RecordLowPoly(self,*args):
 		ListOfSelected = cmds.ls(sl=1) or []
 		LowPolySuffix = cmds.textField('LowSubfixTextField', q=1, tx = 1)
-		#¼ì²éÊÇ²»ÊÇ°´ÕÕ¸ñÊ½ÃüºÃÃûÁË
+		#æ£€æŸ¥æ˜¯ä¸æ˜¯æŒ‰ç…§æ ¼å¼å‘½å¥½åäº†
 		for EachObj in ListOfSelected:
 			CheckSuffix = EachObj.endswith(LowPolySuffix)
 			if CheckSuffix ==False:
@@ -102,7 +104,7 @@ class highlowPolyEdit():
 		om.MGlobal.displayInfo('Record Lowpoly Successfully')
 		SliderMaxValue = len(self.ListOfLowPoly)
 		cmds.intSlider('CheckSlider',e=1, max=SliderMaxValue)
-		#ÆôÓÃ¹¦ÄÜ
+		#å¯ç”¨åŠŸèƒ½
 		'''
 		cmds.button('ShowAll', e=1, enable=1)
 		cmds.checkBoxGrp('VisHideLowHigh', e=1, enable=1)
@@ -114,22 +116,22 @@ class highlowPolyEdit():
 		'''
 		cmds.columnLayout('FunctionAfterRecord', e=1, enable=1)
 
-	#Æ¥Åä¸ßµÍÄ£ÖØÃüÃû¸ßÄ£===============================================================================
+	#åŒ¹é…é«˜ä½æ¨¡é‡å‘½åé«˜æ¨¡===============================================================================
 	def MatchHighLowPoly(self,*args):
 		ListOfSelected = cmds.ls(sl=1) or []
 		LowPolySuffix = cmds.textField('LowSubfixTextField', q=1, tx = 1)
 		HighPolySuffix = cmds.textField('HighSubfixTextField', q=1, tx = 1)
-		#¼ì²éÑ¡ÖĞÏî
-		if len(ListOfSelected) != 2: #ÊÇ·ñÑ¡ÖĞÁËÁ½Ïî
+		#æ£€æŸ¥é€‰ä¸­é¡¹
+		if len(ListOfSelected) != 2: #æ˜¯å¦é€‰ä¸­äº†ä¸¤é¡¹
 			raise Exception('Please select two object, one is lowpoly, another is highpoly to match!')
 
-		if ListOfSelected[0].endswith(LowPolySuffix) ==  ListOfSelected[1].endswith(LowPolySuffix): #ÊÇ·ñÑ¡ÔñÁËÁ½¸öµÍÄ£»òÕß¶¼²»ÊÇµÍÄ£
+		if ListOfSelected[0].endswith(LowPolySuffix) ==  ListOfSelected[1].endswith(LowPolySuffix): #æ˜¯å¦é€‰æ‹©äº†ä¸¤ä¸ªä½æ¨¡æˆ–è€…éƒ½ä¸æ˜¯ä½æ¨¡
 			raise Exception('You choose two lowpoly, or you are not choose lowpoly!')
 
 		if ListOfSelected[0] not in self.ListOfLowPoly and ListOfSelected[1] not in self.ListOfLowPoly:
 			raise Exception('You are not choose lowpoly which has recorded!')
 			
-		#È·¶¨Ë­ÊÇµÍÄ£
+		#ç¡®å®šè°æ˜¯ä½æ¨¡
 		if ListOfSelected[0].endswith(LowPolySuffix) == True:
 			LowPoly = ListOfSelected[0]
 			HighPoly = ListOfSelected[1]
@@ -137,33 +139,33 @@ class highlowPolyEdit():
 			LowPoly = ListOfSelected[1]
 			HighPoly = ListOfSelected[0]
 
-		#¼ì²éµÍÄ£ÊÇ·ñ±»¼ÇÂ¼
+		#æ£€æŸ¥ä½æ¨¡æ˜¯å¦è¢«è®°å½•
 		if LowPoly not in self.ListOfLowPoly:
 			raise Exception('The low poly have not been recorded!')
 
-		#Æ¥ÅäºóÒş²Ø
+		#åŒ¹é…åéšè—
 		if cmds.checkBox('HideAferMatchCheckBox', q=1, v=1) == 1:
 			cmds.hide(ListOfSelected)
 
-		#È·¶¨¸ßÄ£µÄÃû×Ö
+		#ç¡®å®šé«˜æ¨¡çš„åå­—
 		HighPolyName = LowPoly.replace(LowPolySuffix,HighPolySuffix)
 		cmds.rename(HighPoly,HighPolyName)
 
-	#ÉèÖÃ¿ì½İ¼ü========================================================================================
+	#è®¾ç½®å¿«æ·é”®========================================================================================
 	def SetMatchHotkey(self,*args):
-		#ÅĞ¶ÏÈÈ¼ü¼¯,·ñÔò¾Í´´½¨Ò»¸ö
+		#åˆ¤æ–­çƒ­é”®é›†,å¦åˆ™å°±åˆ›å»ºä¸€ä¸ª
 		if cmds.hotkeySet( q=True, current=True ) == 'Maya_Default':
 			cmds.hotkeySet( 'MyKeySet', current=True )
 
-		#´´½¨ÃüÁî
+		#åˆ›å»ºå‘½ä»¤
 		cmds.nameCommand( 'SetMatchHotkey', ann='Match High Low Poly', c='python("MatchTool.MatchHighLowPoly()")' )
-		#»ñÈ¡¿ì½İ¼ü
+		#è·å–å¿«æ·é”®
 		KeyShortcut = cmds.textField('Hotkey', query = 1, tx = 1)
 		CtrlValue = cmds.checkBoxGrp( 'HotKeyAttach', query = 1, value3 = 1)
 		AltValue = cmds.checkBoxGrp( 'HotKeyAttach', query = 1, value1 = 1)
 		ShiftValue = cmds.checkBoxGrp( 'HotKeyAttach', query = 1, value2 = 1)
 
-		#¼ì²é¿ì½İ¼üÊÇ·ñÒÑ¾­±»ÉèÖÃ
+		#æ£€æŸ¥å¿«æ·é”®æ˜¯å¦å·²ç»è¢«è®¾ç½®
 		if cmds.hotkey(KeyShortcut, q=1, alt=AltValue, sht=ShiftValue, ctl=CtrlValue) == False:
 			cmds.hotkey( k = KeyShortcut, alt=AltValue, sht=ShiftValue, ctl=CtrlValue, name='SetMatchHotkey' )
 		else:
@@ -171,8 +173,8 @@ class highlowPolyEdit():
 		om.MGlobal.displayInfo('Set hotkey successfully')
 
 
-	#ÏÔÊ¾Òş²Ø¸ßµÍÄ£====================================================================================
-	#Í¨¹ıµÍÄ£µÃµ½¶ÔÓ¦µÄ¸ßÄ£
+	#æ˜¾ç¤ºéšè—é«˜ä½æ¨¡====================================================================================
+	#é€šè¿‡ä½æ¨¡å¾—åˆ°å¯¹åº”çš„é«˜æ¨¡
 	@staticmethod
 	def GetHighPolyByLowPoly(LowPolyName):
 		LowPolySuffix = cmds.textField('LowSubfixTextField', q=1, tx = 1)
@@ -182,7 +184,7 @@ class highlowPolyEdit():
 
 		return HighPolyName
 
-	#¼ì²é¸ßµÍÄ£ÊÇ·ñ¶¼³É¶ÔÁË
+	#æ£€æŸ¥é«˜ä½æ¨¡æ˜¯å¦éƒ½æˆå¯¹äº†
 	
 	def CheckMatch(self,LowPoly):
 		HighPoly = self.GetHighPolyByLowPoly(LowPolyName=LowPoly)
@@ -196,7 +198,7 @@ class highlowPolyEdit():
 		cmds.text('CheckSliderText',e=1, enable=1)
 		cmds.intSlider('CheckSlider',e=1, enable=1)
 	
-	#»ñµÃ¸ßÄ£µÄÁĞ±í
+	#è·å¾—é«˜æ¨¡çš„åˆ—è¡¨
 	def GetHightPolyList(self, *args):
 		ListOfHighPoly = []
 		for EachPoly in self.ListOfLowPoly:
@@ -204,7 +206,7 @@ class highlowPolyEdit():
 			ListOfHighPoly.append(HighPoly)
 		return ListOfHighPoly
 
-	#ÏÔÊ¾¸ßµÍÄ£
+	#æ˜¾ç¤ºé«˜ä½æ¨¡
 	def ShowAll(self, *args):
 		ListOfHighPoly = self.GetHightPolyList()
 		for EachPoly in ListOfHighPoly:
@@ -216,7 +218,7 @@ class highlowPolyEdit():
 				cmds.showHidden(EachPoly)
 
 		cmds.checkBoxGrp( 'VisHideLowHigh',e=1, valueArray2=[1, 1], enable=1)
-	#·Ö×éÏÔÊ¾Òş²Ø
+	#åˆ†ç»„æ˜¾ç¤ºéšè—
 
 	def ShowHideLow (self, *args):
 		if cmds.checkBoxGrp( 'VisHideLowHigh', q=1, v1=1) ==1:
@@ -239,8 +241,8 @@ class highlowPolyEdit():
 				except:
 					pass
 
-	#»¬¶¯¼ì²é==========================================================================================
-	#Òş²ØËùÓÃ
+	#æ»‘åŠ¨æ£€æŸ¥==========================================================================================
+	#éšè—æ‰€ç”¨
 	def HideAll(self, *args):
 		ListOfHighPoly = self.GetHightPolyList()
 		for EachPoly in ListOfHighPoly:
@@ -250,7 +252,7 @@ class highlowPolyEdit():
 				pass
 		for EachPoly in self.ListOfLowPoly:
 				cmds.hide(EachPoly)
-	#»¬Ìõ¹¦ÄÜ
+	#æ»‘æ¡åŠŸèƒ½
 	def ShowMatchedHighLowSlider(self, *args):
 		SliderValue = cmds.intSlider('CheckSlider', q=1, v=1)
 		if SliderValue == 0:
@@ -265,7 +267,7 @@ class highlowPolyEdit():
 			except:
 				pass
 
-	#¿ìËÙÑ¡Ôñ==========================================================================================
+	#å¿«é€Ÿé€‰æ‹©==========================================================================================
 	def SelectLowPoly(self, *args):
 		cmds.select(self.ListOfLowPoly)
 
@@ -278,23 +280,23 @@ class highlowPolyEdit():
 	#UI===============================================================================================
 	def highlowPolyEditUI(self,*args,**kwargs):
 
-		#ÈÕ³£´°¿Ú¼ì²é
+		#æ—¥å¸¸çª—å£æ£€æŸ¥
 		if cmds.window('highlowPolyEditToolWindow',query=1,exists=1):
 			  cmds.deleteUI('highlowPolyEditToolWindow')
 
-		#´´½¨´°¿Ú
-		cmds.window('highlowPolyEditToolWindow',title='XYPolyTool v1.0')
+		#åˆ›å»ºçª—å£
+		cmds.window('highlowPolyEditToolWindow',title='XYPolyTool v1.1')
 		cmds.columnLayout(adjustableColumn=True)
 
 		cmds.separator( height=5, style='none' )
 
-		#Æ½»¬µÍÄ£UV----------------------------------------------------------------------
+		#å¹³æ»‘ä½æ¨¡UV----------------------------------------------------------------------
 		cmds.columnLayout()
-		cmds.text(l=' µÍÄ£°´UV±ß½çÆ½»¬ÄÚ²¿±ß', h=20, fn ='boldLabelFont')
+		cmds.text(l=u' ä½æ¨¡æŒ‰UVè¾¹ç•Œå¹³æ»‘å†…éƒ¨è¾¹', h=20, fn ='boldLabelFont')
 		cmds.setParent('..')
 
 		cmds.rowColumnLayout(numberOfColumns=1, adj=1)
-		cmds.button(l='Ñ¡ÖĞ²¢Æ½»¬', h=40, c=self.SoftByUVsEdge)
+		cmds.button(l=u'é€‰ä¸­å¹¶å¹³æ»‘', h=40, c=self.SoftByUVsEdge)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='none' )
@@ -302,51 +304,51 @@ class highlowPolyEdit():
 		cmds.separator( height=3, style='in' ,)
 		cmds.separator( height=5, style='none' )
 
-		#ÖØÃüÃû-------------------------------------------------------------------------
+		#é‡å‘½å-------------------------------------------------------------------------
 		cmds.columnLayout()
-		cmds.text(l=' ÖØÃüÃûµÍÄ£', h=20, fn ='boldLabelFont')
+		cmds.text(l=u' é‡å‘½åä½æ¨¡', h=20, fn ='boldLabelFont')
 		cmds.setParent('..')
 
 		cmds.rowColumnLayout(numberOfColumns=2, adj=2)
-		cmds.text(l='Ãû³Æ:', w=55, al='right')
+		cmds.text(l=u'åç§°:', w=55, al='right')
 		cmds.textField('RenameTextField', tx='objName')
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='none' )
 
 		cmds.rowColumnLayout(numberOfColumns=5, adj=3)
-		cmds.text(l='ÆğÊ¼±àºÅ:', w=55, al='right')
+		cmds.text(l=u'èµ·å§‹ç¼–å·:', w=55, al='right')
 		cmds.textField('StartTextField', tx='1', w=90)
 		cmds.text(l='')
-		cmds.text(l='±àºÅÎ»Êı:', w=55, al='right')
+		cmds.text(l=u'ç¼–å·ä½æ•°:', w=55, al='right')
 		cmds.textField('PaddingTextField', tx='2', w=90)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='none' )
 
 		cmds.rowColumnLayout(numberOfColumns=1, adj=1)
-		cmds.button(l='ÖØÃüÃûµÍÄ£', h=40, c=self.Rename)
+		cmds.button(l=u'é‡å‘½åä½æ¨¡', h=40, c=self.Rename)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='in' )
 
-		#ÉèÖÃµÍÄ£µÄ¸ñÊ½
+		#è®¾ç½®ä½æ¨¡çš„æ ¼å¼
 		cmds.columnLayout()
-		cmds.text(l=' ÉèÖÃµÍÄ£¸ñÊ½', h=20, fn ='boldLabelFont')
+		cmds.text(l=u' è®¾ç½®ä½æ¨¡æ ¼å¼', h=20, fn ='boldLabelFont')
 		cmds.setParent('..')
 
 		cmds.rowColumnLayout(numberOfColumns=5, adj=2)
-		cmds.text(l='ºó×ºÃû:', w=55, al='right')
+		cmds.text(l=u'åç¼€å:', w=55, al='right')
 		cmds.textField('LowSubfixTextField', tx='_low')
 		cmds.text(l='', w=5)
-		cmds.button(l='É¾³ı', w=45, c=self.DeletLowSuffix)
-		cmds.button(l='Ìí¼Ó', w=45, c=self.AddLowSuffix)
+		cmds.button(l=u'åˆ é™¤', w=45, c=self.DeletLowSuffix)
+		cmds.button(l=u'æ·»åŠ ', w=45, c=self.AddLowSuffix)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='none' )
 
 		cmds.rowColumnLayout(numberOfColumns=1, adj=1)
-		cmds.button(l='Ñ¡ÖĞµÍÄ£²¢¼ÇÂ¼', h=40, c=self.RecordLowPoly)
+		cmds.button(l=u'é€‰ä¸­å…¨éƒ¨ä½æ¨¡å¹¶è®°å½•', h=40, c=self.RecordLowPoly)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='none' )
@@ -354,31 +356,31 @@ class highlowPolyEdit():
 		cmds.separator( height=3, style='in' ,)
 		cmds.separator( height=5, style='none')
 
-		#Æ¥Åä²¢ÖØÃüÃû¸ßÄ£------------------------------------------------------------------------
-		cmds.columnLayout('FunctionAfterRecord',enable=0,adjustableColumn=True)
+		#åŒ¹é…å¹¶é‡å‘½åé«˜æ¨¡------------------------------------------------------------------------
+		cmds.columnLayout(u'FunctionAfterRecord',enable=0,adjustableColumn=True)
 
 		cmds.columnLayout()
-		cmds.text(l=' ÉèÖÃ¸ßÄ£¸ñÊ½', h=20, fn ='boldLabelFont')
+		cmds.text(l=u' è®¾ç½®é«˜æ¨¡æ ¼å¼', h=20, fn ='boldLabelFont')
 		cmds.setParent('..')
 
 		cmds.rowColumnLayout(numberOfColumns=4,adj=2)
-		cmds.text(l='ºó×ºÃû:', w=55, al='right')
+		cmds.text(l=u'åç¼€å:', w=55, al='right')
 		cmds.textField('HighSubfixTextField', tx='_high')
 		cmds.text(l='', w=5)
-		cmds.checkBox('HideAferMatchCheckBox',l='Æ¥ÅäºóÒş²Ø',v=1, w=90)
+		cmds.checkBox('HideAferMatchCheckBox',l='uåŒ¹é…åéšè—',v=1, w=90)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='none' )
 
 		cmds.rowColumnLayout(numberOfColumns=1, adj=1)
-		cmds.button(l='Í¬Ê±Ñ¡ÖĞ¸ßµÍÄ£½øĞĞÖØÃüÃûÆ¥Åä', h=40, c=self.MatchHighLowPoly)
+		cmds.button(l=u'åŒæ—¶é€‰ä¸­é«˜ä½æ¨¡è¿›è¡Œé‡å‘½ååŒ¹é…', h=40, c=self.MatchHighLowPoly)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='in' )
 
-		#ÉèÖÃ¿ì½İ¼ü
+		#è®¾ç½®å¿«æ·é”®
 		cmds.columnLayout()
-		cmds.text(l=' Îª¸Ã¹¦ÄÜÉèÖÃ¿ì½İ¼ü', h=20, fn ='boldLabelFont')
+		cmds.text(l=u' ä¸ºè¯¥åŠŸèƒ½è®¾ç½®å¿«æ·é”®', h=20, fn ='boldLabelFont')
 		cmds.setParent('..')
 
 		cmds.rowColumnLayout(numberOfColumns=5,adj=3)
@@ -386,7 +388,7 @@ class highlowPolyEdit():
 		cmds.checkBoxGrp( 'HotKeyAttach',numberOfCheckBoxes=3, labelArray3=['alt', 'shift', 'ctrl'],cw3=[40,50,40],valueArray3=[1, 1, 0])
 		cmds.textField('Hotkey', tx='w', w=20)
 		cmds.text(l='', w=5)
-		cmds.button(l='ÉèÖÃ¿ì½İ¼ü', w=90, c=self.SetMatchHotkey)
+		cmds.button(l=u'è®¾ç½®å¿«æ·é”®', w=90, c=self.SetMatchHotkey)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='none' )
@@ -394,40 +396,40 @@ class highlowPolyEdit():
 		cmds.separator( height=3, style='in' ,)
 		cmds.separator( height=5, style='none')
 
-		#ÏÔÊ¾Òş²Ø¸ßµÍÄ£
+		#æ˜¾ç¤ºéšè—é«˜ä½æ¨¡
 		cmds.rowColumnLayout(numberOfColumns=4,adj=4)
 		cmds.text(l='', w=5)
-		cmds.checkBoxGrp( 'VisHideLowHigh',numberOfCheckBoxes=2, enable=0,labelArray2=['ÏÔÊ¾µÍÄ£', 'ÏÔÊ¾¸ßÄ£'],valueArray2=[1, 1],cc1=self.ShowHideLow,cc2=self.ShowHideHigh)
+		cmds.checkBoxGrp( 'VisHideLowHigh',numberOfCheckBoxes=2, enable=0,labelArray2=[u'æ˜¾ç¤ºä½æ¨¡', u'æ˜¾ç¤ºé«˜æ¨¡'],valueArray2=[1, 1],cc1=self.ShowHideLow,cc2=self.ShowHideHigh)
 		cmds.text(l='')
-		cmds.button('ShowAll', l='È«²¿ÏÔÊ¾', w=80, enable=1, c=self.ShowAll)
+		cmds.button('ShowAll', l=u'å…¨éƒ¨æ˜¾ç¤º', w=80, enable=1, c=self.ShowAll)
 		cmds.setParent('..')
 
 		#cmds.separator( height=5, style='none' )
 
-		#¼ì²é¸ßµÍÄ£Æ¥Åä
+		#æ£€æŸ¥é«˜ä½æ¨¡åŒ¹é…
 		cmds.columnLayout()
-		cmds.text(l=' ¼ì²é¸ßµÍÄ£Æ¥Åä', h=20, fn ='boldLabelFont')
+		cmds.text(l=u' æ£€æŸ¥é«˜ä½æ¨¡åŒ¹é…', h=20, fn ='boldLabelFont')
 		cmds.setParent('..')
 
 		cmds.rowLayout(numberOfColumns=1, adj=1)
-		cmds.button('CheckMatchButton', enable=1, l='¼ì²éÆ¥ÅäÇé¿ö',c=self.CheckListMatch)
+		cmds.button('CheckMatchButton', enable=1, l=u'æ£€æŸ¥åŒ¹é…æƒ…å†µ',c=self.CheckListMatch)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='none' )
 
-		#»¬¶¯²é¿´Æ¥Åä
+		#æ»‘åŠ¨æŸ¥çœ‹åŒ¹é…
 		cmds.rowLayout(numberOfColumns=2, adj=2)
-		cmds.text('CheckSliderText',l=' »¬¶¯²é¿´Æ¥Åä',enable=0)
+		cmds.text('CheckSliderText',l=u' æ»‘åŠ¨æŸ¥çœ‹åŒ¹é…',enable=0)
 		cmds.intSlider('CheckSlider', enable=0, min=0,v=0,step=1,dc=self.ShowMatchedHighLowSlider)
 		cmds.setParent('..')
 
 		cmds.separator( height=5, style='in' )
 
-		#Ñ¡Ôñ¸ßµÍÄ£
+		#é€‰æ‹©é«˜ä½æ¨¡
 		cmds.rowLayout(numberOfColumns=3, adj=3)
-		cmds.button('ChooseLowPoly', enable=1, l='Ñ¡ÔñµÍÄ£', w=75, c=self.SelectLowPoly)		
-		cmds.button('ChooseHighPoly', enable=1, l='Ñ¡Ôñ¸ßÄ£', w=75, c=self.SelectHighPoly)
-		cmds.button('ChooseBothPoly', enable=1, l='È«Ñ¡', c=self.SelectHighLowPoly)
+		cmds.button('ChooseLowPoly', enable=1, l=u'é€‰æ‹©ä½æ¨¡', w=75, c=self.SelectLowPoly)		
+		cmds.button('ChooseHighPoly', enable=1, l=u'é€‰æ‹©é«˜æ¨¡', w=75, c=self.SelectHighPoly)
+		cmds.button('ChooseBothPoly', enable=1, l=u'å…¨é€‰', c=self.SelectHighLowPoly)
 		cmds.setParent('..')
 
 		cmds.setParent('..')
@@ -437,6 +439,6 @@ class highlowPolyEdit():
 		cmds.button(l='Debug',c=self.DeBugPrint)
 		'''
 
-		#´°¿ÚÊÕÎ²
+		#çª—å£æ”¶å°¾
 		cmds.window('highlowPolyEditToolWindow', e=True, w=300, h=1)
 		cmds.showWindow('highlowPolyEditToolWindow')
